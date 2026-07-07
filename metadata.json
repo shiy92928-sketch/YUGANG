@@ -1,0 +1,6 @@
+{
+  "name": "Interactive Aquarium",
+  "description": "An interactive fish aquarium with gesture controls",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
