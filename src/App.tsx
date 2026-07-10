@@ -17,6 +17,7 @@ export default function App() {
   const handTrackerRef = useRef<HandTracker | null>(null);
   const audioSystemRef = useRef<AudioSystem | null>(null);
   const [isReady, setIsReady] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
   const [isCameraReady, setIsCameraReady] = useState(false);
   const [isAudioEnabled, setIsAudioEnabled] = useState(false);
   
@@ -229,6 +230,38 @@ export default function App() {
         )}
       </motion.div>
 
+      {/* Intro Page Overlay */}
+      <AnimatePresence>
+        {!hasStarted && isReady && (
+          <motion.div 
+            className="absolute inset-0 z-50 flex items-center justify-center bg-teal-900/10 backdrop-blur-md"
+            exit={{ opacity: 0, transition: { duration: 1 } }}
+          >
+            <div className="relative p-8 md:p-12 max-w-md w-[90%] rounded-3xl bg-white/10 backdrop-blur-lg border border-white/20 shadow-[0_8px_32px_rgba(0,100,150,0.3)] text-center overflow-hidden">
+               {/* inner glow edge */}
+               <div className="absolute inset-0 border border-white/30 rounded-3xl pointer-events-none mix-blend-overlay" />
+               <h1 className="text-3xl md:text-4xl font-serif text-white tracking-wide mb-6 font-light drop-shadow-sm">The Wandering Fish</h1>
+               
+               <div className="space-y-4 text-teal-50/90 font-sans font-light tracking-wide text-sm md:text-base text-left mb-10">
+                 <p className="flex items-center gap-2"><span className="text-xl">🐟</span> Touch the fish</p>
+                 <p className="opacity-80">Move your finger close to the fish.</p>
+                 <p className="opacity-80">The fish will sense your movement and swim away.</p>
+                 <br/>
+                 <p className="opacity-80">Explore this quiet underwater memory space.</p>
+               </div>
+
+               <button 
+                 onClick={() => { setHasStarted(true); enableAudio(); }}
+                 className="px-8 py-3 rounded-full bg-white/20 hover:bg-white/30 border border-white/40 text-white tracking-[0.2em] font-sans text-sm transition-all duration-300 hover:shadow-[0_0_15px_rgba(255,255,255,0.4)] relative overflow-hidden group"
+               >
+                 <span className="relative z-10">START EXPERIENCE</span>
+                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-[200%] transition-transform duration-1000 ease-in-out" />
+               </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Loading Overlay */}
       <AnimatePresence>
         {!isReady && (
@@ -246,34 +279,6 @@ export default function App() {
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Minimal UI Hints */}
-      <motion.div 
-        className="absolute top-8 right-8 z-30 pointer-events-none"
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: isReady ? 0.8 : 0, x: 0 }}
-        transition={{ delay: 2.5, duration: 1 }}
-      >
-        <p className="font-sans text-xs text-teal-100/80 tracking-[0.2em] font-light mix-blend-screen drop-shadow-md text-right border-r-2 border-teal-500/50 pr-3">
-          TRY TOUCHING<br/><span className="text-teal-300">THE FISH</span>
-        </p>
-      </motion.div>
-
-      <motion.div 
-        className="absolute bottom-8 left-0 right-0 z-30 flex flex-col items-center pointer-events-none gap-2"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: isReady && !isInteracting ? 0.6 : 0, y: 0 }}
-        transition={{ delay: 2, duration: 1 }}
-      >
-        <p className="font-sans text-xs text-teal-100 tracking-[0.3em] font-light mix-blend-screen drop-shadow-md">
-          GLIDE OR TOUCH TO INTERACT
-        </p>
-        {isCameraReady && (
-          <p className="font-sans text-[10px] text-teal-300 tracking-[0.2em] font-light mix-blend-screen drop-shadow-md">
-            (CAMERA ACTIVE: PUSH FINGER FORWARD TO REPEL FISH)
-          </p>
-        )}
-      </motion.div>
     </div>
   );
 }

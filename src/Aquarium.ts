@@ -5,10 +5,10 @@ import { RippleEffect } from './RippleEffect';
 const noise3D = createNoise3D();
 
 const FISH_COUNT = 3;
-const BOUNDARY = new THREE.Vector3(12, 7, 2);
+let boundary = new THREE.Vector3(12, 7, 2);
 const FISH_MAX_SPEED = 0.025; // Slower, natural
 const FISH_MAX_FORCE = 0.0006; // Smooth adjustment
-const PANIC_SPEED_MULT = 3.5;
+const PANIC_SPEED_MULT = 1.3; // Gentle panic
 
 class Boid {
   position: THREE.Vector3;
@@ -68,12 +68,12 @@ class Boid {
     // Soft bounds check with inertia
     const margin = 2.5;
     const turnFactor = 0.0008;
-    if (this.position.x > BOUNDARY.x - margin) this.acceleration.x -= turnFactor;
-    if (this.position.x < -BOUNDARY.x + margin) this.acceleration.x += turnFactor;
-    if (this.position.y > BOUNDARY.y - margin) this.acceleration.y -= turnFactor;
-    if (this.position.y < -BOUNDARY.y + margin) this.acceleration.y += turnFactor;
-    if (this.position.z > BOUNDARY.z - margin) this.acceleration.z -= turnFactor;
-    if (this.position.z < -BOUNDARY.z + margin) this.acceleration.z += turnFactor;
+    if (this.position.x > boundary.x - margin) this.acceleration.x -= turnFactor;
+    if (this.position.x < -boundary.x + margin) this.acceleration.x += turnFactor;
+    if (this.position.y > boundary.y - margin) this.acceleration.y -= turnFactor;
+    if (this.position.y < -boundary.y + margin) this.acceleration.y += turnFactor;
+    if (this.position.z > boundary.z - margin) this.acceleration.z -= turnFactor;
+    if (this.position.z < -boundary.z + margin) this.acceleration.z += turnFactor;
   }
 }
 
@@ -105,6 +105,9 @@ export class Aquarium {
 
   animationFrameId = 0;
   clock = new THREE.Clock();
+
+  bgMesh?: THREE.Mesh;
+  textureAspect: number = 1.0;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -253,18 +256,19 @@ export class Aquarium {
       if (!texture) return;
       texture.colorSpace = THREE.SRGBColorSpace;
       const image = texture.image as HTMLImageElement;
-      const aspect = image.width / image.height;
-      const bgHeight = 45; // Fits within camera fov at z=-25
-      const bgWidth = bgHeight * aspect;
-      const bgGeo = new THREE.PlaneGeometry(bgWidth, bgHeight);
+      this.textureAspect = image.width / image.height;
+      
+      const bgGeo = new THREE.PlaneGeometry(1, 1);
       const bgMat = new THREE.MeshBasicMaterial({ 
         map: texture, 
         depthWrite: false, 
         fog: true 
       });
-      const bgMesh = new THREE.Mesh(bgGeo, bgMat);
-      bgMesh.position.z = -25;
-      this.scene.add(bgMesh);
+      this.bgMesh = new THREE.Mesh(bgGeo, bgMat);
+      this.bgMesh.position.z = -25;
+      this.scene.add(this.bgMesh);
+      
+      this.resize(window.innerWidth, window.innerHeight); // Update scaling
     });
   }
 
@@ -294,9 +298,9 @@ export class Aquarium {
     
     for (let i = 0; i < FISH_COUNT; i++) {
       const boid = new Boid(
-        (Math.random() - 0.5) * BOUNDARY.x * 2,
-        (Math.random() - 0.5) * BOUNDARY.y * 2,
-        (Math.random() - 0.5) * BOUNDARY.z * 2
+        (Math.random() - 0.5) * boundary.x * 2,
+        (Math.random() - 0.5) * boundary.y * 2,
+        (Math.random() - 0.5) * boundary.z * 2
       );
       this.boids.push(boid);
       
@@ -323,9 +327,9 @@ export class Aquarium {
     for (let i = 0; i < this.bubbleCount; i++) {
       this.bubbleData.push({
         pos: new THREE.Vector3(
-          (Math.random() - 0.5) * BOUNDARY.x * 2,
-          -BOUNDARY.y + Math.random() * BOUNDARY.y * 2,
-          (Math.random() - 0.5) * BOUNDARY.z * 2
+          (Math.random() - 0.5) * boundary.x * 2,
+          -boundary.y + Math.random() * boundary.y * 2,
+          (Math.random() - 0.5) * boundary.z * 2
         ),
         speed: 1 + Math.random() * 2,
         phase: Math.random() * Math.PI * 2
@@ -380,7 +384,7 @@ export class Aquarium {
       if (dPointer < interactRadius) {
         const repulsion = new THREE.Vector3().subVectors(boid.position, this.pointerWorld);
         repulsion.normalize();
-        repulsion.multiplyScalar(interactForce * (1 - dPointer / interactRadius));
+        repulsion.multiplyScalar(interactForce * (1 - dPointer / interactRadius) * 0.5);
         boid.applyForce(repulsion);
         if (dPointer < interactRadius * 0.5 && boid.panicCooldown <= 0) {
           boid.panicCooldown = 1.0; // Panic for 1 second
@@ -389,7 +393,7 @@ export class Aquarium {
           this.onFishTouched?.();
 
           // Instant boost
-          boid.velocity.add(repulsion.clone().normalize().multiplyScalar(FISH_MAX_SPEED * 8.0));
+          boid.velocity.add(repulsion.clone().normalize().multiplyScalar(FISH_MAX_SPEED * 1.5));
         }
       }
 
@@ -518,9 +522,9 @@ export class Aquarium {
       b.pos.y += b.speed * delta;
       b.pos.x += Math.sin(b.phase + elapsedTime * 2) * 0.02;
       
-      if (b.pos.y > BOUNDARY.y) {
-        b.pos.y = -BOUNDARY.y;
-        b.pos.x = (Math.random() - 0.5) * BOUNDARY.x * 2;
+      if (b.pos.y > boundary.y) {
+        b.pos.y = -boundary.y;
+        b.pos.x = (Math.random() - 0.5) * boundary.x * 2;
       }
       
       this.dummy.position.copy(b.pos);
@@ -540,6 +544,29 @@ export class Aquarium {
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height);
+
+    // Update boundaries for the fish based on frustum at z=0 (camera is at z=25)
+    // fov is 45. height = 2 * 25 * tan(45/2)
+    const viewHeightAtZero = 2 * 25 * Math.tan(THREE.MathUtils.degToRad(45 / 2));
+    const viewWidthAtZero = viewHeightAtZero * this.camera.aspect;
+    boundary.set(viewWidthAtZero / 2, viewHeightAtZero / 2, 2);
+
+    // Update background plane size to cover the screen at z=-25 (distance = 50)
+    if (this.bgMesh) {
+      const H = 2 * 50 * Math.tan(THREE.MathUtils.degToRad(45 / 2));
+      const W = H * this.camera.aspect;
+      
+      const windowAspect = this.camera.aspect;
+      let scaleW, scaleH;
+      if (windowAspect > this.textureAspect) {
+        scaleW = W;
+        scaleH = W / this.textureAspect;
+      } else {
+        scaleH = H;
+        scaleW = H * this.textureAspect;
+      }
+      this.bgMesh.scale.set(scaleW, scaleH, 1);
+    }
   }
 
   destroy() {
