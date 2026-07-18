@@ -51,7 +51,7 @@ export class HandTracker {
 
     try {
       const vision = await FilesetResolver.forVisionTasks(
-        "https://unpkg.com/@mediapipe/tasks-vision@0.10.35/wasm"
+        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.35/wasm"
       );
 
       this.handLandmarker = await HandLandmarker.createFromOptions(vision, {
