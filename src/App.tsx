@@ -26,6 +26,20 @@ export default function App() {
   const [isInteracting, setIsInteracting] = useState(false);
   const [isPushing, setIsPushing] = useState(false);
 
+  // Layout Settings
+  const cardW = 800;
+  const cardH = 527;
+  const cardX = 0;
+  const cardY = 0;
+
+  const titleScale = 0.9;
+  const titleX = -25;
+  const titleY = -8;
+
+  const btnScale = 1.10;
+  const btnX = -13;
+  const btnY = 0;
+
   useEffect(() => {
     if (!canvasRef.current) return;
 
@@ -237,22 +251,42 @@ export default function App() {
             className="absolute inset-0 z-50 flex items-center justify-center bg-teal-900/10 backdrop-blur-md"
             exit={{ opacity: 0, transition: { duration: 1 } }}
           >
-            <div className="relative p-8 md:p-12 max-w-md w-[90%] rounded-3xl bg-white/10 backdrop-blur-lg border border-white/20 shadow-[0_8px_32px_rgba(0,100,150,0.3)] text-center overflow-hidden">
-               {/* inner glow edge */}
-               <div className="absolute inset-0 border border-white/30 rounded-3xl pointer-events-none mix-blend-overlay" />
-               <h1 className="text-3xl md:text-4xl font-serif text-white tracking-wide mb-6 font-light drop-shadow-sm">The Wandering Fish</h1>
+            <div 
+              className="relative p-8 md:p-12 w-[90%] rounded-3xl text-center flex flex-col justify-center items-center overflow-hidden"
+              style={{
+                backgroundImage: "url('https://raw.githubusercontent.com/shiy92928-sketch/picture/main/%E7%95%8C%E9%9D%A22.png')",
+                backgroundSize: '100% 100%',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
+                aspectRatio: '2531 / 1656',
+                width: `${cardW}px`,
+                height: `${cardH}px`,
+                transform: `translate(${cardX}px, ${cardY}px)`,
+                maxWidth: '90vw',
+                maxHeight: '90vh'
+              }}
+            >
+               <h1 
+                 className="text-3xl md:text-4xl font-serif text-white tracking-wide mb-6 font-light drop-shadow-sm transition-transform duration-200"
+                 style={{ transform: `translate(${titleX}px, ${titleY}px) scale(${titleScale})` }}
+               >
+                 The Wandering Fish
+               </h1>
                
-               <div className="space-y-4 text-teal-50/90 font-sans font-light tracking-wide text-sm md:text-base text-left mb-10">
-                 <p className="flex items-center gap-2"><span className="text-xl">🐟</span> Touch the fish</p>
-                 <p className="opacity-80">Move your finger close to the fish.</p>
-                 <p className="opacity-80">The fish will sense your movement and swim away.</p>
-                 <br/>
-                 <p className="opacity-80">Explore this quiet underwater memory space.</p>
+               <div className="space-y-4 text-teal-50/90 font-sans font-light tracking-wide text-sm md:text-base text-left mb-10 w-full flex flex-col items-center">
+                 <div>
+                   <p className="flex items-center gap-2"><span className="text-xl">🐟</span> Touch the fish</p>
+                   <p className="opacity-80">Move your finger close to the fish.</p>
+                   <p className="opacity-80">The fish will sense your movement and swim away.</p>
+                   <br/>
+                   <p className="opacity-80">Explore this quiet underwater memory space.</p>
+                 </div>
                </div>
 
                <button 
                  onClick={() => { setHasStarted(true); enableAudio(); }}
                  className="px-8 py-3 rounded-full bg-white/20 hover:bg-white/30 border border-white/40 text-white tracking-[0.2em] font-sans text-sm transition-all duration-300 hover:shadow-[0_0_15px_rgba(255,255,255,0.4)] relative overflow-hidden group"
+                 style={{ transform: `translate(${btnX}px, ${btnY}px) scale(${btnScale})` }}
                >
                  <span className="relative z-10">START EXPERIENCE</span>
                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-[200%] transition-transform duration-1000 ease-in-out" />

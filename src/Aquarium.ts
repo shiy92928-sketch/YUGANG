@@ -144,13 +144,13 @@ export class Aquarium {
           (texture) => resolve(texture),
           undefined,
           (err) => {
-            console.error('ThreeJS Texture Load error:', err);
+            console.warn('ThreeJS Texture Load error:', err);
             resolve(null);
           }
         );
       });
     } catch (e) {
-      console.error('Failed to fetch texture:', e);
+      console.warn('Failed to fetch texture:', e);
       return null;
     }
   }
@@ -230,13 +230,13 @@ export class Aquarium {
           resolve(texture);
         };
         img.onerror = () => {
-          console.error('Failed to load image for canvas processing');
+          console.warn('Failed to load image for canvas processing');
           resolve(null);
         };
         img.src = objectUrl;
       });
     } catch (e) {
-      console.error('Failed to fetch texture:', e);
+      console.warn('Failed to fetch texture:', e);
       return null;
     }
   }
