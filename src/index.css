@@ -1,1 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&family=VT323&display=swap');
 @import "tailwindcss";
+
+@theme {
+  --font-pixel: "Pixelify Sans", sans-serif;
+  --font-pixel-body: "VT323", monospace;
+}

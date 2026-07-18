@@ -267,15 +267,15 @@ export default function App() {
               }}
             >
                <h1 
-                 className="text-3xl md:text-4xl font-serif text-white tracking-wide mb-6 font-light drop-shadow-sm transition-transform duration-200"
+                 className="text-3xl md:text-4xl font-pixel text-white tracking-wide mb-6 font-bold drop-shadow-sm transition-transform duration-200"
                  style={{ transform: `translate(${titleX}px, ${titleY}px) scale(${titleScale})` }}
                >
                  The Wandering Fish
                </h1>
                
-               <div className="space-y-4 text-teal-50/90 font-sans font-light tracking-wide text-sm md:text-base text-left mb-10 w-full flex flex-col items-center">
+               <div className="space-y-4 text-teal-50/90 font-pixel-body font-normal tracking-wide text-base md:text-lg text-left mb-10 w-full flex flex-col items-center">
                  <div>
-                   <p className="flex items-center gap-2"><span className="text-xl">🐟</span> Touch the fish</p>
+                   <p className="flex items-center gap-2"><span className="text-xl md:text-2xl">🐟</span> Touch the fish</p>
                    <p className="opacity-80">Move your finger close to the fish.</p>
                    <p className="opacity-80">The fish will sense your movement and swim away.</p>
                    <br/>
@@ -285,7 +285,7 @@ export default function App() {
 
                <button 
                  onClick={() => { setHasStarted(true); enableAudio(); }}
-                 className="px-8 py-3 rounded-full bg-white/20 hover:bg-white/30 border border-white/40 text-white tracking-[0.2em] font-sans text-sm transition-all duration-300 hover:shadow-[0_0_15px_rgba(255,255,255,0.4)] relative overflow-hidden group"
+                 className="px-8 py-3 rounded-full bg-white/20 hover:bg-white/30 border border-white/40 text-white tracking-[0.2em] font-pixel-body text-base md:text-lg transition-all duration-300 hover:shadow-[0_0_15px_rgba(255,255,255,0.4)] relative overflow-hidden group"
                  style={{ transform: `translate(${btnX}px, ${btnY}px) scale(${btnScale})` }}
                >
                  <span className="relative z-10">START EXPERIENCE</span>
@@ -306,7 +306,7 @@ export default function App() {
           >
             <div className="flex flex-col items-center gap-4 text-teal-100">
               <div className="w-12 h-12 border-4 border-teal-900 border-t-teal-400 rounded-full animate-spin" />
-              <p className="font-sans text-sm tracking-[0.2em] font-light opacity-80">
+              <p className="font-pixel-body text-sm tracking-[0.2em] font-normal opacity-80">
                 DESCENDING
               </p>
             </div>
