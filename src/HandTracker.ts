@@ -19,7 +19,7 @@ export class HandTracker {
   
   // EMA smoothing
   private smoothedPosition: { x: number, y: number, z: number } | null = null;
-  private SMOOTHING_FACTOR = 0.15;
+  private SMOOTHING_FACTOR = 0.3;
   
   // Stabilization
   private detectionStartTime: number = 0;
@@ -167,8 +167,8 @@ export class HandTracker {
       const alignment = dotProduct / (mag1 * mag2);
       
       // Check if MCP-PIP-TIP are aligned (close to 1.0 means straight)
-      // Using a threshold of 0.85 for reasonable natural curvature
-      const isPointing = alignment > 0.85;
+      // Using a threshold of 0.75 for reasonable natural curvature
+      const isPointing = alignment > 0.75;
       
       if (isPointing) {
         // Mirrored coordinate: webcam view is mirrored horizontally
@@ -185,14 +185,14 @@ export class HandTracker {
         } else {
           if (!this.isStabilized) {
             const movement = Math.hypot(rawX - this.referencePosition.x, rawY - this.referencePosition.y);
-            // Increased the movement threshold to 0.15 to be more forgiving for natural hand sway
-            if (movement > 0.15) {
+            // Increased the movement threshold to 0.25 to be more forgiving for natural hand sway
+            if (movement > 0.25) {
               // Moved too much, reset reference timer
               this.referencePosition = { x: rawX, y: rawY };
               this.detectionStartTime = now;
             } else {
-              // Stayed within threshold, check time (reduced to 600ms for quicker activation)
-              if (now - this.detectionStartTime >= 600) {
+              // Stayed within threshold, check time (reduced to 200ms for quicker activation)
+              if (now - this.detectionStartTime >= 200) {
                 this.isStabilized = true;
               }
             }
@@ -228,9 +228,9 @@ export class HandTracker {
             const oldest = this.scaleHistory[0];
             const scaleDiff = handScale - oldest.scale;
             // Positive diff means hand got bigger (closer to camera)
-            if (scaleDiff > 0.02) {
+            if (scaleDiff > 0.015) {
               this.isPushing = true;
-              this.pushCooldownTimer = now + 1000; // 1 second cooldown before another push
+              this.pushCooldownTimer = now + 800; // 0.8 second cooldown before another push
               this.scaleHistory = []; // Reset history
             } else {
               this.isPushing = false;
